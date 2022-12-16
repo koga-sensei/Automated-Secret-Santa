@@ -1,8 +1,9 @@
 import csv
 import random
 import tkinter as tk
+import sys
 import win32com.client as win32
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 
 
 def read_csv():
@@ -32,20 +33,37 @@ def make_pairs(data):
     ]
 
 
+def ask_send_confirmation():
+    root = tk.Tk()
+    root.withdraw()
+    send_confirmation = messagebox.askyesno(
+        title="Confirmation d'envoi",
+        message="Voulez vous envoyer les résultats par mail ?"
+    )
+    root.destroy()
+    if send_confirmation is False:
+        print("Sending aborted !")
+        sys.exit()
+    else:
+        return True
+
+
 def send_results(pairs):
+    ask_send_confirmation()
     outlook = win32.Dispatch('outlook.application')
     for pair in pairs:
         sender_name = pair[0][0].split()[0]
         sender_email = pair[0][1]
         receiver_name = pair[1][0].split()[0]
         mail = outlook.CreateItem(0)
-        mail.Subject = "Tirage au sort Secret Santa MMO Edition 2022"
+        mail.Subject = "Secret Santa 2022"
         mail.To = sender_email
         mail.HTMLBody = r"""
-        Bonjour {sender},<br><br>
-        Voici les résultats de ton tirage après activation du robot père noël :<br><br>
-        Tu est chargé(e) d'offrir un cadeau à {receiver}<br><br>
+        Beep...Beep...Boop...Bonjour {sender},<br><br>
+        Je suis le robot lutin chargé de t'annoncer le résultat de ton tirage au sort.<br><br>
+        Félicitations ! Tu es chargé(e) d'offrir un cadeau à {receiver}<br><br>
         Mais chut c'est un secret !<br><br>
+        Sur ce, Joyeux Noël !!!
         <body>
             <pre>
            ____
